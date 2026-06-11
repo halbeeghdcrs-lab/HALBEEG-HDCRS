@@ -1,9 +1,7 @@
 version: 1
 project:
-  title: Website Title
-  # authors:
-  #   - name: Author Name
-  copyright: '2026'
+  title: HDCRS V2 – Halbeeg Daily Construction Reporting System
+  copyright: '2026 Halbeeg AEC'
   exclude:
     - _build
     - Thumbs.db
@@ -16,32 +14,23 @@ project:
     - CONDUCT.md
     - CONTRIBUTING.md
     - README.md
-  github: opengeos/myst-website-template
-  thebe:
+  github: halbeeghdcrs-lab/HALBEEG-HDCRS
+  thebe:                  # remove if not needed, but harmless
     binder:
-      repo: opengeos/myst-website-template
+      repo: halbeeghdcrs-lab/HALBEEG-HDCRS
       provider: github
       url: https://mybinder.org
       ref: main
-  bibliography:
-    - pages/references.bib
   toc:
     - file: index.md
-    - title: Preface
+    - title: Proposal
+      file: pages/proposal.md
+    - title: Technical Specification
+      file: pages/technical-spec.md
+    - title: Blog
+      file: blog.md
       children:
-        - file: pages/preface.md
-    - title: Getting Started
-      children:
-        - file: pages/part01/getting-started.md
-        - file: pages/part01/installation.md
-    - title: Examples
-      children:
-        - file: pages/part02/first-example.md
-    - file: blog.md
-      children:
-        - file: tags/myst-markdown.md
-        - file: tags/tutorial.md
-        - file: tags/github-pages.md
+        - file: tags/hdcrs.md
     - pattern: posts/*.md
       hidden: true
 site:
@@ -51,10 +40,6 @@ site:
     favicon: fav.ico
     folders: true
     style: custom.css
-    # analytics_google: G-XXX
-  actions:
-    - title: RSS
-      url: https://opengeos.org/myst-website-template/rss.xml
   template: book-theme
   parts:
     primary_sidebar_footer: ''

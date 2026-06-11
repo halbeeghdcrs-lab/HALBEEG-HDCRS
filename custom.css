@@ -1,55 +1,48 @@
-.myst-fm-downloads-dropdown {
-  display: none !important;
+/* HDCRS V2 custom styling */
+body {
+  background-color: #F5E4D0 !important;
+  color: #3E2723;
 }
-
-table td:first-child,
-table th:first-child {
-  white-space: nowrap;
+.bd-sidebar, .bd-header, .bd-footer, .bd-toc {
+  background-color: #FDFBF7 !important;
 }
-
-#giscus-comments {
-  max-width: 100% !important;
-  padding: 0 !important;
+.bd-sidebar .nav-link, .bd-toc .nav-link {
+  color: #5D4037;
 }
-
-.giscus,
-.giscus-frame {
-  width: 100% !important;
+.bd-sidebar .nav-link:hover, .bd-toc .nav-link:hover {
+  color: #00695C;
 }
-
-#featured-projects + .myst-grid .myst-card-footer,
-#featured-projects + .myst-grid .myst-card-title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-  text-align: center !important;
-  white-space: nowrap;
+.bd-sidebar .active > .nav-link {
+  color: #00695C;
+  font-weight: bold;
 }
-
-#featured-projects + .myst-grid .myst-card-footer > *,
-#featured-projects + .myst-grid .myst-card-title > * {
-  text-align: center !important;
+.navbar-brand, .navbar-nav .nav-link {
+  color: #3E2723 !important;
 }
-
-#featured-projects + .myst-grid .myst-card-footer p,
-#featured-projects + .myst-grid .myst-card-footer strong {
-  margin: 0 auto;
+.btn-primary, .btn-outline-primary {
+  background-color: #00695C;
+  border-color: #00695C;
 }
-
-#posts ~ .myst-grid .myst-card-header,
-#posts ~ * .myst-grid .myst-card-header {
-  padding: 0.5rem !important;
-  border-bottom: none !important;
-  background: transparent !important;
+.btn-primary:hover {
+  background-color: #004D40;
 }
-
-#posts ~ .myst-grid .myst-card-header img,
-#posts ~ * .myst-grid .myst-card-header img {
-  display: block;
-  width: 100%;
-  margin: 0 !important;
-  border: 1px solid rgba(128, 128, 128, 0.3);
+h1, h2, h3, h4 {
+  color: #3E2723;
+}
+code {
+  background: #F3E7DA;
+  color: #004D40;
   border-radius: 4px;
+  padding: 0.2em 0.4em;
+}
+pre {
+  background: #FFF9F5 !important;
+  border: 1px solid #E8D5C0;
+  border-radius: 12px;
+}
+table {
+  background: #FFFBF7;
+}
+td, th {
+  border-color: #D7CCC8;
 }
