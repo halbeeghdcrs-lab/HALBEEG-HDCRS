@@ -1,48 +1,128 @@
-/* HDCRS V2 custom styling */
+/* ============================================================
+   HDCRS V2 – Custom Styles for MyST Documentation Site
+   Background: #F5E4D0 (warm cream) – no dark blue
+   ============================================================ */
+
+/* --- Base body & background --- */
 body {
   background-color: #F5E4D0 !important;
   color: #3E2723;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
-.bd-sidebar, .bd-header, .bd-footer, .bd-toc {
+
+/* --- Sidebar, header, footer --- */
+.bd-sidebar,
+.bd-header,
+.bd-footer,
+.bd-toc {
   background-color: #FDFBF7 !important;
+  border-color: #D7CCC8;
 }
-.bd-sidebar .nav-link, .bd-toc .nav-link {
+
+/* Sidebar links */
+.bd-sidebar .nav-link,
+.bd-toc .nav-link {
   color: #5D4037;
 }
-.bd-sidebar .nav-link:hover, .bd-toc .nav-link:hover {
+.bd-sidebar .nav-link:hover,
+.bd-toc .nav-link:hover {
   color: #00695C;
 }
 .bd-sidebar .active > .nav-link {
   color: #00695C;
   font-weight: bold;
 }
-.navbar-brand, .navbar-nav .nav-link {
+
+/* Navbar */
+.navbar-brand,
+.navbar-nav .nav-link {
   color: #3E2723 !important;
 }
-.btn-primary, .btn-outline-primary {
+
+/* --- Logo size --- */
+.navbar-brand img {
+  max-height: 70px !important;   /* Adjust this value to your preference */
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+/* --- Buttons --- */
+.btn-primary,
+.btn-outline-primary {
   background-color: #00695C;
   border-color: #00695C;
+  color: white;
 }
 .btn-primary:hover {
   background-color: #004D40;
+  border-color: #004D40;
 }
-h1, h2, h3, h4 {
+
+/* --- Headings --- */
+h1, h2, h3, h4, h5, h6 {
   color: #3E2723;
 }
+
+/* --- Inline code --- */
 code {
   background: #F3E7DA;
   color: #004D40;
   border-radius: 4px;
   padding: 0.2em 0.4em;
+  font-family: monospace;
 }
+
+/* --- Code blocks (pre) --- */
 pre {
   background: #FFF9F5 !important;
   border: 1px solid #E8D5C0;
   border-radius: 12px;
+  padding: 1.2rem;
+  color: #3E2723;
 }
+
+/* --- Tables --- */
 table {
   background: #FFFBF7;
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
 td, th {
+  border: 1px solid #D7CCC8;
+  padding: 0.6rem 0.8rem;
+  color: #3E2723;
+}
+th {
+  background: #F3E7DA;
+  font-weight: 700;
+}
+
+/* --- Links --- */
+a {
+  color: #00695C;
+}
+a:hover {
+  color: #004D40;
+}
+
+/* --- Horizontal rules --- */
+hr {
   border-color: #D7CCC8;
+}
+
+/* --- Footer --- */
+.bd-footer p {
+  color: #5D4037;
+}
+
+/* --- Make sure tabs (tab-set) are readable --- */
+.tab-set > label {
+  color: #5D4037;
+  font-weight: 600;
+}
+.tab-set > input:checked + label {
+  color: #00695C;
+  background: #FDFBF7;
+  border-bottom-color: #00695C;
 }
