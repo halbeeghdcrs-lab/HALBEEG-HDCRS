@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head><title>Director Dashboard</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  .card { border: 1px solid #ccc; margin: 10px 0; padding: 10px; border-radius: 5px; }
+  button { margin-right: 5px; }
+</style>
+</head>
+<body>
+  <h1>Director Dashboard</h1>
+  <button onclick="loadPending()">Refresh</button>
+  <div id="reports"></div>
+
+  <script>
+    // ⬇️ REPLACE THESE TWO ⬇️
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwZs4YY4mIvCUQNCK2CLMwcEAvvtYtDFPdpWnffAE6lXEE-j9gInlUlNkexLN1yEWuo/exec';
+    const API_KEY = 'my‑secret‑key‑1000127316329';
+    // ⬆️ REPLACE THESE TWO ⬆️
+
+    async function loadPending() {
+      const res = await fetch(`${API_URL}?key=${API_KEY}&action=pendingReports`);
+      const data = await res.json();
+      let html = '';
+      data.forEach(r => {
+        html += `<div class="card">
+          <strong>${r.site}</strong> - ${r.date}<br>
+          Supervisor: ${r.supervisor}<br>
+          Summary: ${r.summary}<br>
+          <button onclick="approve('${r.reportId}')">Approve</button>
+          <button onclick="reject('${r.reportId}')">Reject</button>
+        </div>`;
+      });
+      document.getElementById('reports').innerHTML = html || '<p>No pending reports.</p>';
+    }
+
+    async function approve(id) {
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({key:API_KEY, action:'approveReport', reportId:id, directorEmail:'dir@halbeeg.com', comments:''}) });
+      loadPending();
+    }
+    async function reject(id) {
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({key:API_KEY, action:'rejectReport', reportId:id, directorEmail:'dir@halbeeg.com', comments:''}) });
+      loadPending();
+    }
+
+    loadPending();
+  </script>
+</body>
+</html>
