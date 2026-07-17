@@ -290,7 +290,7 @@
 
       // Send to Google Apps Script endpoint
       // REPLACE THIS URL with your deployed FormHandler web app URL
-      var FORM_ENDPOINT = 'https://script.google.com/macros/s/YOUR_FORM_HANDLER_DEPLOYMENT_ID/exec';
+      var FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycby7J6IiWo22UbSs3-imrj41jnTf4f4G5lxNliiqdlXFt_azj0To6ewXU0LQ_3YP28sp/exec';
 
       fetch(FORM_ENDPOINT, {
         method: 'POST',
