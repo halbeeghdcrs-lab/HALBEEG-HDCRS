@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HDCRS v4.1 - Halbeeg Daily Construction Reporting System. A cloud-based platform for real-time construction progress tracking, director analytics, PDF reporting, and audit trail management.">
+  <meta name="keywords" content="HDCRS, construction reporting, progress tracking, Halbeeg, Google Apps Script, daily report, project management, Ethiopia, Somali Region">
+  <title>HDCRS v4.1 — Halbeeg Daily Construction Reporting System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/halbeeghdcrs-lab/HALBEEG-HDCRS/main/logo.png">
+
+  <style>
+    /* ====== HDCRS PAGE-SPECIFIC STYLES ====== */
+
+    /* Hero variant for product page */
+    .hero-product {
+      min-height: 100vh;
+    }
+
+    .hero-product .hero-gradient {
+      background: linear-gradient(135deg, #0B1D35 0%, #14294D 30%, #0D7C66 70%, #0B1D35 100%);
+    }
+
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(13,124,102,0.15);
+      border: 1px solid rgba(13,124,102,0.3);
+      padding: 8px 22px;
+      border-radius: 100px;
+      color: #10A37F;
+      font-family: var(--font-accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .version-badge i { font-size: 0.85rem; }
+
+    .hero-product .hero-title {
+      font-size: clamp(2.6rem, 6vw, 4.5rem);
+    }
+
+    .hero-product .hero-title .highlight {
+      background: linear-gradient(135deg, var(--color-accent-light), var(--color-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Problem Section */
+    .problem-section {
+      background: var(--color-off-white);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .problem-visual {
+      position: relative;
+    }
+
+    .problem-card-stack {
+      position: relative;
+      height: 420px;
+    }
+
+    .problem-paper {
+      position: absolute;
+      background: var(--color-white);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-md);
+      width: 280px;
+      transition: var(--transition);
+    }
+
+    .problem-paper:nth-child(1) {
+      top: 0; left: 0;
+      transform: rotate(-3deg);
+      opacity: 0.5;
+      z-index: 1;
+    }
+    .problem-paper:nth-child(2) {
+      top: 20px; left: 30px;
+      transform: rotate(1deg);
+      opacity: 0.7;
+      z-index: 2;
+    }
+    .problem-paper:nth-child(3) {
+      top: 40px; left: 60px;
+      transform: rotate(-1deg);
+      z-index: 3;
+    }
+
+    .problem-paper-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .problem-paper-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .problem-paper-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .paper-line {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-light-gray);
+    }
+
+    .paper-line.short { width: 60%; }
+    .paper-line.medium { width: 80%; }
+    .paper-line.long { width: 95%; }
+
+    .problem-paper .error-stamp {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      border: 3px solid var(--color-error);
+      color: var(--color-error);
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding: 6px 20px;
+      border-radius: 6px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .problem-text h3 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .problem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .problem-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .problem-item-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: rgba(220,38,38,0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-error);
+      font-size: 0.9rem;
+    }
+
+    .problem-item h4 {
+      font-family: var(--font-accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 4px;
+    }
+
+    .problem-item p {
+      font-size: 0.84rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+    /* Solution / What is HDCRS */
+    .solution-intro {
+      background: var(--color-white);
+    }
+
+    .solution-intro-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .solution-intro-content .section-desc {
+      max-width: 800px;
+      margin: 0 auto 48px;
+      font-size: 1.08rem;
+    }
+
+    .hdcrs-pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .pillar-card {
+      text-align: center;
+      padding: 36px 24px;
+      background: var(--color-off-white);
+      border: 1px solid var(--color-light-gray);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .pillar-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      transition: var(--transition);
+    }
+
+    .pillar-icon-wrap i {
+      font-size: 1.6rem;
+      color: var(--color-white);
+    }
+
+    .pillar-card:nth-child(1) .pillar-icon-wrap { background: linear-gradient(135deg, #14294D, #1E3A5F); }
+    .pillar-card:nth-child(2) .pillar-icon-wrap { background: linear-gradient(135deg, #0D7C66, #10A37F); }
+    .pillar-card:nth-child(3) .pillar-icon-wrap { background: linear-gradient(135deg, #C49A2A, #A07D1E); }
+    .pillar-card:nth-child(4) .pillar-icon-wrap { background: linear-gradient(135deg, #6366F1, #818CF8); }
+
+    .pillar-card h4 {
+      font-family: var(--font-accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 8px;
+    }
+
+    .pillar-card p {
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      line-height: 1.65;
+    }
+
+    /* Features Deep-Dive */
+    .features-section {
+      background: var(--color-off-white);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .feature-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-light-gray);
+      border-radius: var(--radius-md);
+      padding: 44px 40px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-teal));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .feature-icon-box {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: var(--transition);
+    }
+
+    .feature-card:nth-child(1) .feature-icon-box { background: linear-gradient(135deg, rgba(20,41,77,0.1), rgba(30,58,95,0.15)); color: var(--color-primary); }
+    .feature-card:nth-child(2) .feature-icon-box { background: linear-gradient(135deg, rgba(13,124,102,0.1), rgba(16,163,127,0.15)); color: var(--color-teal); }
+    .feature-card:nth-child(3) .feature-icon-box { background: linear-gradient(135deg, rgba(196,154,42,0.1), rgba(160,125,30,0.15)); color: var(--color-accent-dark); }
+    .feature-card:nth-child(4) .feature-icon-box { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(129,140,248,0.15)); color: #6366F1; }
+
+    .feature-card:hover .feature-icon-box {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+      color: var(--color-accent);
+    }
+
+    .feature-header h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+    }
+
+    .feature-card > p {
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    .feature-highlights {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-highlight-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: var(--color-text-body);
+      font-weight: 500;
+    }
+
+    .feature-highlight-item i {
+      color: var(--color-teal);
+      font-size: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Architecture Section */
+    .arch-section {
+      background: var(--color-primary-dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .arch-section .section-title { color: var(--color-white); }
+    .arch-section .section-desc { color: rgba(255,255,255,0.6); }
+    .arch-section .tag-light { color: var(--color-accent-light); }
+
+    .arch-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(196,154,42,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(13,124,102,0.05) 0%, transparent 50%);
+    }
+
+    .arch-diagram {
+      position: relative;
+      z-index: 2;
+    }
+
+    .arch-layer {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+
+    .arch-layer:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(196,154,42,0.2);
+    }
+
+    .arch-layer-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-accent);
+      margin-bottom: 16px;
+    }
+
+    .arch-layer-label i { font-size: 0.85rem; }
+
+    .arch-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .arch-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 10px 20px;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .arch-item:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(196,154,42,0.3);
+      color: var(--color-white);
+    }
+
+    .arch-item i {
+      color: var(--color-teal);
+      font-size: 0.9rem;
+    }
+
+    .arch-connector {
+      display: flex;
+      justify-content: center;
+      padding: 4px 0;
+    }
+
+    .arch-connector-line {
+      width: 2px;
+      height: 24px;
+      background: linear-gradient(180deg, rgba(196,154,42,0.4), rgba(196,154,42,0.1));
+    }
+
+    .arch-connector i {
+      color: var(--color-accent);
+      font-size: 0.8rem;
+      opacity: 0.5;
+    }
+
+    /* Tech Stack */
+    .tech-section {
+      background: var(--color-white);
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .tech-card {
+      text-align: center;
+      padding: 32px 20px;
+      border: 1px solid var(--color-light-gray);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .tech-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-accent);
+    }
+
+    .tech-card i {
+      font-size: 2rem;
+      color: var(--color-primary);
+      margin-bottom: 14px;
+      display: block;
+      transition: var(--transition);
+    }
+
+    .tech-card:hover i { color: var(--color-accent); }
+
+    .tech-card h4 {
+      font-family: var(--font-accent);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 6px;
+    }
+
+    .tech-card p {
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* Portals Preview */
+    .portals-section {
+      background: var(--color-off-white);
+    }
+
+    .portals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .portal-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-light-gray);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .portal-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-xl);
+      border-color: transparent;
+    }
+
+    .portal-preview {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-preview-bg {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .portal-card:nth-child(1) .portal-preview-bg { background: linear-gradient(135deg, #14294D, #1E3A5F); }
+    .portal-card:nth-child(2) .portal-preview-bg { background: linear-gradient(135deg, #0D7C66, #0B1D35); }
+    .portal-card:nth-child(3) .portal-preview-bg { background: linear-gradient(135deg, #C49A2A, #14294D); }
+
+    .portal-preview-icon {
+      font-size: 3.5rem;
+      color: rgba(255,255,255,0.15);
+    }
+
+    .portal-role-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-family: var(--font-accent);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-white);
+      backdrop-filter: blur(10px);
+    }
+
+    .portal-card:nth-child(1) .portal-role-badge { background: rgba(20,41,77,0.7); }
+    .portal-card:nth-child(2) .portal-role-badge { background: rgba(13,124,102,0.7); }
+    .portal-card:nth-child(3) .portal-role-badge { background: rgba(196,154,42,0.7); }
+
+    .portal-info {
+      padding: 28px 24px;
+    }
+
+    .portal-info h3 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 10px;
+    }
+
+    .portal-info p {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .portal-features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .portal-features-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--color-text-body);
+      font-weight: 500;
+    }
+
+    .portal-features-list li i {
+      color: var(--color-teal);
+      font-size: 0.7rem;
+    }
+
+    /* Benefits Section */
+    .benefits-section {
+      background: var(--color-white);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .benefit-card {
+      padding: 36px 28px;
+      border-left: 4px solid transparent;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .benefit-card:nth-child(1) { border-left-color: var(--color-accent); background: rgba(196,154,42,0.03); }
+    .benefit-card:nth-child(2) { border-left-color: var(--color-teal); background: rgba(13,124,102,0.03); }
+    .benefit-card:nth-child(3) { border-left-color: var(--color-primary); background: rgba(20,41,77,0.03); }
+    .benefit-card:nth-child(4) { border-left-color: #6366F1; background: rgba(99,102,241,0.03); }
+    .benefit-card:nth-child(5) { border-left-color: var(--color-accent-dark); background: rgba(160,125,30,0.03); }
+    .benefit-card:nth-child(6) { border-left-color: var(--color-teal-light); background: rgba(16,163,127,0.03); }
+
+    .benefit-card:hover {
+      transform: translateX(6px);
+    }
+
+    .benefit-card .benefit-icon {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      margin-bottom: 14px;
+    }
+
+    .benefit-card h4 {
+      font-family: var(--font-accent);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: 8px;
+    }
+
+    .benefit-card p {
+      font-size: 0.84rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #0D7C66 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(196,154,42,0.08) 0%, transparent 50%);
+      animation: cta-glow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes cta-glow {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(5%, -5%); }
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-content h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--color-white);
+      line-height: 1.25;
+      margin-bottom: 20px;
+    }
+
+    .cta-content p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Data Model Stats */
+    .data-stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .data-stat-card {
+      text-align: center;
+      padding: 28px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .data-stat-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(196,154,42,0.25);
+    }
+
+    .data-stat-number {
+      font-family: var(--font-accent);
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--color-accent);
+      line-height: 1;
+    }
+
+    .data-stat-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hdcrs-pillars { grid-template-columns: repeat(2, 1fr); }
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+      .portals-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+      .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+      .data-stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .problem-grid { grid-template-columns: 1fr; }
+      .problem-visual { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .hdcrs-pillars { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .data-stats-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== NAVIGATION ====== -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="https://raw.githubusercontent.com/halbeeghdcrs-lab/HALBEEG-HDCRS/main/logo.png" alt="Halbeeg" class="nav-logo-img">
+        <div class="nav-logo-text">
+          <span class="nav-logo-name">HALBEEG</span>
+          <span class="nav-logo-sub">HDCRS v4.1</span>
+        </div>
+      </a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="hdcrs.html" class="nav-link active">HDCRS</a></li>
+        <li><a href="index.html#solutions" class="nav-link">Services</a></li>
+        <li><a href="index.html#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+        <li><a href="index.html#contact" class="nav-link nav-cta-btn">Submit RFP</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span class="hamburger"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero hero-product" id="home">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid-pattern"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+    </div>
+    <div class="hero-content">
+      <div class="version-badge">
+        <i class="fas fa-microchip"></i>
+        Version 4.1 — Production Release
+      </div>
+      <h1 class="hero-title">
+        <span class="highlight">HDCRS</span><br>
+        Daily Construction<br>Reporting System
+      </h1>
+      <p class="hero-subtitle">
+        A cloud-native platform that transforms how construction progress is tracked, reported, and analyzed. 
+        Built for government infrastructure projects where transparency, accuracy, and real-time oversight matter.
+      </p>
+      <div class="hero-cta">
+        <a href="#features" class="btn btn-primary">
+          <i class="fas fa-bolt"></i> Explore Features
+        </a>
+        <a href="#architecture" class="btn btn-outline">
+          <i class="fas fa-sitemap"></i> View Architecture
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="4">0</span>
+          <span class="hero-stat-plus">+</span>
+          <span class="hero-stat-label">Web Portals</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="22">0</span>
+          <span class="hero-stat-plus">+</span>
+          <span class="hero-stat-label">Database Sheets</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="30">0</span>
+          <span class="hero-stat-plus">+</span>
+          <span class="hero-stat-label">API Functions</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="9">0</span>
+          <span class="hero-stat-plus">+</span>
+          <span class="hero-stat-label">KPI Dashboards</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"><i class="fas fa-chevron-down"></i></div>
+    </div>
+  </section>
+
+  <!-- ====== PROBLEM ====== -->
+  <section class="section problem-section" id="problem">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">The Challenge</span>
+        <h2 class="section-title">Construction Reporting is <span class="text-gold">Broken</span></h2>
+        <p class="section-desc">
+          Across Ethiopia's public infrastructure projects, daily progress reporting still relies on manual, 
+          paper-based processes that create systemic inefficiencies and blind spots for decision-makers.
+        </p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-visual reveal">
+          <div class="problem-card-stack">
+            <div class="problem-paper">
+              <div class="problem-paper-header">
+                <div class="problem-paper-icon" style="background:rgba(220,38,38,0.1); color:var(--color-error);"><i class="fas fa-file-alt"></i></div>
+                <div style="flex:1">
+                  <div class="paper-line short" style="background:rgba(220,38,38,0.15)"></div>
+                  <div class="paper-line medium"></div>
+                </div>
+              </div>
+              <div class="problem-paper-lines">
+                <div class="paper-line long"></div>
+                <div class="paper-line medium"></div>
+                <div class="paper-line long"></div>
+                <div class="paper-line short"></div>
+              </div>
+              <div class="error-stamp">Delayed</div>
+            </div>
+            <div class="problem-paper">
+              <div class="problem-paper-header">
+                <div class="problem-paper-icon" style="background:rgba(196,154,42,0.1); color:var(--color-accent);"><i class="fas fa-calculator"></i></div>
+                <div style="flex:1">
+                  <div class="paper-line short" style="background:rgba(196,154,42,0.15)"></div>
+                  <div class="paper-line medium"></div>
+                </div>
+              </div>
+              <div class="problem-paper-lines">
+                <div class="paper-line long"></div>
+                <div class="paper-line medium"></div>
+                <div class="paper-line long"></div>
+                <div class="paper-line short"></div>
+              </div>
+              <div class="error-stamp">Error</div>
+            </div>
+            <div class="problem-paper">
+              <div class="problem-paper-header">
+                <div class="problem-paper-icon" style="background:rgba(99,102,241,0.1); color:#6366F1;"><i class="fas fa-chart-bar"></i></div>
+                <div style="flex:1">
+                  <div class="paper-line short" style="background:rgba(99,102,241,0.15)"></div>
+                  <div class="paper-line medium"></div>
+                </div>
+              </div>
+              <div class="problem-paper-lines">
+                <div class="paper-line long"></div>
+                <div class="paper-line medium"></div>
+                <div class="paper-line long"></div>
+                <div class="paper-line short"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="problem-text reveal">
+          <h3>Manual Processes Create <span class="text-gold">Cascading Failures</span></h3>
+          <p style="font-size:0.95rem; color:var(--color-text-muted); line-height:1.8;">
+            When Resident Engineers hand-write daily reports and Project Managers manually compile monthly summaries, 
+            the entire oversight chain suffers from delays, errors, and incomplete data.
+          </p>
+          <div class="problem-list">
+            <div class="problem-item">
+              <div class="problem-item-icon"><i class="fas fa-clock"></i></div>
+              <div>
+                <h4>Delayed Reporting</h4>
+                <p>Paper reports take days to reach directors. By the time data arrives, it's already outdated and decisions are made on stale information.</p>
+              </div>
+            </div>
+            <div class="problem-item">
+              <div class="problem-item-icon"><i class="fas fa-calculator"></i></div>
+              <div>
+                <h4>Manual Calculation Errors</h4>
+                <p>Cumulative progress, target achievement percentages, and block status are computed by hand — prone to mistakes that compound over time.</p>
+              </div>
+            </div>
+            <div class="problem-item">
+              <div class="problem-item-icon"><i class="fas fa-eye-slash"></i></div>
+              <div>
+                <h4>No Real-Time Visibility</h4>
+                <p>Directors have no dashboard view. They rely on word-of-mouth or fragmented spreadsheets to understand project health.</p>
+              </div>
+            </div>
+            <div class="problem-item">
+              <div class="problem-item-icon"><i class="fas fa-search"></i></div>
+              <div>
+                <h4>No Audit Trail</h4>
+                <p>When a report is revised, there's no record of what changed, who changed it, or why. Accountability is impossible to establish.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== WHAT IS HDCRS ====== -->
+  <section class="section solution-intro" id="about">
+    <div class="container">
+      <div class="solution-intro-content">
+        <div class="section-header reveal">
+          <span class="section-tag">The Solution</span>
+          <h2 class="section-title">What is <span class="text-gold">HDCRS</span>?</h2>
+          <p class="section-desc">
+            The <strong>Halbeeg Daily Construction Reporting System</strong> is a cloud-native web platform built on Google Apps Script 
+            that digitizes the entire construction reporting workflow — from field data entry by Resident Engineers to 
+            executive analytics dashboards for Directors.
+          </p>
+        </div>
+      </div>
+      <div class="hdcrs-pillars reveal">
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap"><i class="fas fa-pen-to-square"></i></div>
+          <h4>Field Data Entry</h4>
+          <p>Resident Engineers submit structured daily reports from any device with a browser. No installs, no paper.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap"><i class="fas fa-gears"></i></div>
+          <h4>Auto-Calculate Engine</h4>
+          <p>Cumulative progress, target achievement %, and block status are computed automatically in real-time.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap"><i class="fas fa-chart-line"></i></div>
+          <h4>Director Analytics</h4>
+          <p>9+ KPIs with 30-day trend charts. Directors see project health at a glance without reading a single report.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap"><i class="fas fa-file-pdf"></i></div>
+          <h4>PDF Report Generation</h4>
+          <p>One-click professional PDF reports with embedded photos, ready for government submission and archiving.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FEATURES DEEP-DIVE ====== -->
+  <section class="section features-section" id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Core Capabilities</span>
+        <h2 class="section-title">Engineered for <span class="text-gold">Construction Reality</span></h2>
+        <p class="section-desc">
+          Every feature in HDCRS was designed to solve a real pain point observed on active 
+          government construction sites in the Somali Regional State of Ethiopia.
+        </p>
+      </div>
+      <div class="features-grid">
+        <!-- Feature 1: Auto-Calculate -->
+        <div class="feature-card reveal">
+          <div class="feature-header">
+            <div class="feature-icon-box"><i class="fas fa-gears"></i></div>
+            <h3>Auto-Calculate Engine</h3>
+          </div>
+          <p>
+            The heart of HDCRS. Every time a Resident Engineer submits a daily report, the engine automatically 
+            recalculates cumulative progress percentages, computes target achievement rates, and updates 
+            the overall block completion status — across all projects and all work items simultaneously.
+          </p>
+          <div class="feature-highlights">
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Cumulative progress computed per work item and per project</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Target achievement % auto-derived from planned vs. actual</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Block status (Not Started / In Progress / Completed) auto-set</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Recalculates across the entire project chain on every submission</div>
+          </div>
+        </div>
+
+        <!-- Feature 2: Director Analytics -->
+        <div class="feature-card reveal">
+          <div class="feature-header">
+            <div class="feature-icon-box"><i class="fas fa-chart-line"></i></div>
+            <h3>Director Analytics Dashboard</h3>
+          </div>
+          <p>
+            A comprehensive KPI dashboard purpose-built for directors who need to monitor multiple 
+            construction projects simultaneously. Powered by Chart.js with interactive visualizations 
+            that load directly in the browser.
+          </p>
+          <div class="feature-highlights">
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> 9+ KPIs: active projects, overall progress, workforce, equipment utilization</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> 30-day rolling trend charts for every major metric</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Project-level drill-down with status breakdowns</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Real-time data — no refresh needed, always current</div>
+          </div>
+        </div>
+
+        <!-- Feature 3: PDF Generation -->
+        <div class="feature-card reveal">
+          <div class="feature-header">
+            <div class="feature-icon-box"><i class="fas fa-file-pdf"></i></div>
+            <h3>PDF Report Generation</h3>
+          </div>
+          <p>
+            Generate publication-ready daily and monthly reports as PDF documents with a single click. 
+            Reports include site photographs, progress tables, and all relevant metadata — formatted 
+            for government submission standards.
+          </p>
+          <div class="feature-highlights">
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> HTML-to-PDF pipeline via Google Apps Script blob service</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Base64-encoded photos embedded directly into PDF output</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Branded headers, footers, and consistent formatting</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Downloadable and archivable for compliance records</div>
+          </div>
+        </div>
+
+        <!-- Feature 4: Audit Trail -->
+        <div class="feature-card reveal">
+          <div class="feature-header">
+            <div class="feature-icon-box"><i class="fas fa-shield-halved"></i></div>
+            <h3>Field-Level Audit Trail</h3>
+          </div>
+          <p>
+            Every edit to any report is tracked at the field level. The system records exactly 
+            which value changed, what the old and new values were, who made the change, and when. 
+            This creates an immutable chain of accountability across the entire reporting workflow.
+          </p>
+          <div class="feature-highlights">
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Field-level diff tracking — not just "report was edited"</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Old value, new value, editor identity, and timestamp recorded</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Full revision history viewable per report</div>
+            <div class="feature-highlight-item"><i class="fas fa-check"></i> Supports accountability and dispute resolution</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== ARCHITECTURE ====== -->
+  <section class="section arch-section" id="architecture">
+    <div class="arch-bg"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag tag-light">Technical Architecture</span>
+        <h2 class="section-title">System Architecture <span class="text-gold">Overview</span></h2>
+        <p class="section-desc">
+          A serverless, zero-infrastructure architecture designed for reliability and simplicity. 
+          Built entirely on Google's cloud platform with no external servers to manage.
+        </p>
+      </div>
+      <div class="arch-diagram reveal">
+        <!-- Frontend Layer -->
+        <div class="arch-layer">
+          <div class="arch-layer-label"><i class="fas fa-desktop"></i> Frontend Layer — 4 Independent Web Applications</div>
+          <div class="arch-items">
+            <div class="arch-item"><i class="fas fa-hard-hat"></i> RE Portal (Field Data Entry)</div>
+            <div class="arch-item"><i class="fas fa-user-tie"></i> Director Portal (Analytics)</div>
+            <div class="arch-item"><i class="fas fa-clipboard-list"></i> PM Portal (Management)</div>
+            <div class="arch-item"><i class="fas fa-globe"></i> Public Website</div>
+          </div>
+        </div>
+        <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+        <!-- API Layer -->
+        <div class="arch-layer">
+          <div class="arch-layer-label"><i class="fas fa-arrows-left-right"></i> API Layer — JSON over HTTPS</div>
+          <div class="arch-items">
+            <div class="arch-item"><i class="fas fa-right-to-bracket"></i> Authentication &amp; Role Gating</div>
+            <div class="arch-item"><i class="fas fa-database"></i> CRUD Operations</div>
+            <div class="arch-item"><i class="fas fa-chart-pie"></i> Aggregated Analytics Queries</div>
+            <div class="arch-item"><i class="fas fa-file-export"></i> PDF Blob Generation</div>
+          </div>
+        </div>
+        <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+        <!-- Backend Layer -->
+        <div class="arch-layer">
+          <div class="arch-layer-label"><i class="fas fa-server"></i> Backend — Google Apps Script (Serverless)</div>
+          <div class="arch-items">
+            <div class="arch-item"><i class="fas fa-route"></i> doGet / doPost Routing</div>
+            <div class="arch-item"><i class="fas fa-lock"></i> LockService (Concurrency)</div>
+            <div class="arch-item"><i class="fas fa-code"></i> 30+ Server Functions</div>
+            <div class="arch-item"><i class="fas fa-shield"></i> Server-Side Validation</div>
+          </div>
+        </div>
+        <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+        <!-- Data Layer -->
+        <div class="arch-layer">
+          <div class="arch-layer-label"><i class="fas fa-database"></i> Data Layer — Google Sheets (22 Tabs)</div>
+          <div class="arch-items">
+            <div class="arch-item"><i class="fas fa-table"></i> 6 Master Data Sheets</div>
+            <div class="arch-item"><i class="fas fa-file-lines"></i> 14 Transactional Sheets</div>
+            <div class="arch-item"><i class="fas fa-toolbox"></i> 4 Operational Sheets</div>
+            <div class="arch-item"><i class="fas fa-link"></i> Parent-Child via Report ID</div>
+          </div>
+        </div>
+
+        <!-- Data Stats -->
+        <div class="data-stats-row">
+          <div class="data-stat-card">
+            <div class="data-stat-number">22</div>
+            <div class="data-stat-label">Database Sheets</div>
+          </div>
+          <div class="data-stat-card">
+            <div class="data-stat-number">30+</div>
+            <div class="data-stat-label">Server Functions</div>
+          </div>
+          <div class="data-stat-card">
+            <div class="data-stat-number">12+</div>
+            <div class="data-stat-label">API Endpoints</div>
+          </div>
+          <div class="data-stat-card">
+            <div class="data-stat-number">0</div>
+            <div class="data-stat-label">External Servers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== TECH STACK ====== -->
+  <section class="section tech-section" id="tech">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Technology</span>
+        <h2 class="section-title">Built with <span class="text-gold">Proven Stack</span></h2>
+        <p class="section-desc">
+          Every technology choice was driven by the constraints of the deployment environment: 
+          zero infrastructure budget, unreliable internet, and non-technical end users.
+        </p>
+      </div>
+      <div class="tech-grid reveal">
+        <div class="tech-card">
+          <i class="fab fa-google"></i>
+          <h4>Google Apps Script</h4>
+          <p>Serverless backend with built-in spreadsheet integration. Zero hosting cost.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-table"></i>
+          <h4>Google Sheets</h4>
+          <p>Relational database with 22 tabs. Parent-child via Report ID keys.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fab fa-html5"></i>
+          <h4>Vanilla HTML/JS/CSS</h4>
+          <p>No frameworks. Fast load, works offline-capable, minimal dependencies.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-chart-pie"></i>
+          <h4>Chart.js</h4>
+          <p>Interactive analytics visualizations for the Director dashboard.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-lock"></i>
+          <h4>Role-Based Access</h4>
+          <p>UI gating + server-side validation. RE, Director, PM roles.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-floppy-disk"></i>
+          <h4>localStorage</h4>
+          <p>Client-side draft saving for field reports in low-connectivity areas.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-file-pdf"></i>
+          <h4>Blob PDF Engine</h4>
+          <p>HTML-to-PDF via Google blob service with base64 photo embedding.</p>
+        </div>
+        <div class="tech-card">
+          <i class="fas fa-cloud"></i>
+          <h4>Fully Cloud-Native</h4>
+          <p>No servers, no Docker, no deployment pipeline. Push and go.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== PORTALS ====== -->
+  <section class="section portals-section" id="portals">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">User Portals</span>
+        <h2 class="section-title">Three Portals, <span class="text-gold">One System</span></h2>
+        <p class="section-desc">
+          Each user role gets a purpose-built interface tailored to their specific workflow. 
+          All portals share the same backend and data layer, ensuring consistency.
+        </p>
+      </div>
+      <div class="portals-grid reveal">
+        <!-- RE Portal -->
+        <div class="portal-card">
+          <div class="portal-preview">
+            <div class="portal-preview-bg">
+              <i class="fas fa-hard-hat portal-preview-icon"></i>
+            </div>
+            <div class="portal-role-badge">Resident Engineer</div>
+          </div>
+          <div class="portal-info">
+            <h3>RE Portal</h3>
+            <p>
+              The field data entry interface where Resident Engineers submit daily construction reports, 
+              upload site photographs, and track progress for each work item and block.
+            </p>
+            <ul class="portal-features-list">
+              <li><i class="fas fa-check"></i> Structured daily report submission</li>
+              <li><i class="fas fa-check"></i> Photo upload with base64 encoding</li>
+              <li><i class="fas fa-check"></i> Auto-calculated progress indicators</li>
+              <li><i class="fas fa-check"></i> Draft saving via localStorage</li>
+              <li><i class="fas fa-check"></i> Report edit and revision history</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Director Portal -->
+        <div class="portal-card">
+          <div class="portal-preview">
+            <div class="portal-preview-bg">
+              <i class="fas fa-chart-line portal-preview-icon"></i>
+            </div>
+            <div class="portal-role-badge">Director</div>
+          </div>
+          <div class="portal-info">
+            <h3>Director Portal</h3>
+            <p>
+              The executive analytics dashboard that gives directors real-time visibility into all active 
+              construction projects without needing to read individual reports.
+            </p>
+            <ul class="portal-features-list">
+              <li><i class="fas fa-check"></i> 9+ KPI cards with live values</li>
+              <li><i class="fas fa-check"></i> 30-day trend charts (Chart.js)</li>
+              <li><i class="fas fa-check"></i> Project-level status breakdown</li>
+              <li><i class="fas fa-check"></i> Workforce and equipment tracking</li>
+              <li><i class="fas fa-check"></i> One-click PDF report download</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PM Portal -->
+        <div class="portal-card">
+          <div class="portal-preview">
+            <div class="portal-preview-bg">
+              <i class="fas fa-clipboard-list portal-preview-icon"></i>
+            </div>
+            <div class="portal-role-badge">Project Manager</div>
+          </div>
+          <div class="portal-info">
+            <h3>PM Portal</h3>
+            <p>
+              The project management interface for PMs who need to oversee report quality, 
+              monitor team activity, and ensure data completeness across projects.
+            </p>
+            <ul class="portal-features-list">
+              <li><i class="fas fa-check"></i> Report review and approval workflow</li>
+              <li><i class="fas fa-check"></i> Team activity monitoring</li>
+              <li><i class="fas fa-check"></i> Cross-project progress comparison</li>
+              <li><i class="fas fa-check"></i> Data completeness indicators</li>
+              <li><i class="fas fa-check"></i> Export and archiving tools</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== BENEFITS ====== -->
+  <section class="section benefits-section" id="benefits">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Why HDCRS</span>
+        <h2 class="section-title">Impact on <span class="text-gold">Project Delivery</span></h2>
+        <p class="section-desc">
+          HDCRS doesn't just digitize reports — it transforms the entire construction oversight chain 
+          from reactive paper-chasing to proactive, data-driven management.
+        </p>
+      </div>
+      <div class="benefits-grid reveal">
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-bolt"></i></div>
+          <h4>Real-Time Data Flow</h4>
+          <p>Reports are available to directors the instant they're submitted. No more waiting for paper to travel from site to office.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-bullseye"></i></div>
+          <h4>Zero Calculation Errors</h4>
+          <p>The auto-calculate engine eliminates manual math. Progress percentages and target achievements are always accurate and consistent.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-eye"></i></div>
+          <h4>Full Director Visibility</h4>
+          <p>Directors see a live dashboard with KPIs and trends instead of flipping through stacks of paper reports.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-scale-balanced"></i></div>
+          <h4>Accountability &amp; Audit</h4>
+          <p>Every edit is tracked with field-level precision. Disputes about what was reported and when are resolved with data, not arguments.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-coins"></i></div>
+          <h4>Zero Infrastructure Cost</h4>
+          <p>Runs entirely on Google's free tier. No servers, no licenses, no IT team needed. Just a browser and a Google account.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon"><i class="fas fa-mobile-screen-button"></i></div>
+          <h4>Works on Any Device</h4>
+          <p>Pure HTML/JS means it runs on phones, tablets, and laptops. REs can submit reports from the construction site.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CTA ====== -->
+  <section class="section cta-section" id="contact">
+    <div class="container">
+      <div class="cta-content reveal">
+        <h2>Ready to Modernize Your<br>Construction Reporting?</h2>
+        <p>
+          HDCRS is deployed and operational. Whether you're a government bureau, a consultancy firm, 
+          or a construction company — we'd be glad to show you how it works.
+        </p>
+        <div class="cta-buttons">
+          <a href="index.html#contact" class="btn btn-primary">
+            <i class="fas fa-envelope"></i> Get in Touch
+          </a>
+          <a href="index.html" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Halbeeg Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer style="background:var(--color-primary-dark); padding:60px 0 30px;">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1.5fr; gap:40px; margin-bottom:48px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+            <img src="https://raw.githubusercontent.com/halbeeghdcrs-lab/HALBEEG-HDCRS/main/logo.png" alt="Halbeeg" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--color-accent);">
+            <div>
+              <div style="font-family:var(--font-accent); font-weight:800; font-size:1.1rem; color:var(--color-white); letter-spacing:2px;">HALBEEG</div>
+              <div style="font-size:0.6rem; color:var(--color-accent); text-transform:uppercase; letter-spacing:1.5px; font-weight:500;">HDCRS v4.1</div>
+            </div>
+          </div>
+          <p style="font-size:0.85rem; color:rgba(255,255,255,0.5); line-height:1.7; max-width:320px;">
+            A cloud-native construction reporting platform built by Halbeeg Architect &amp; Engineering Consultancy 
+            for transparent, data-driven infrastructure project management.
+          </p>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-accent); font-size:0.82rem; font-weight:700; color:var(--color-white); margin-bottom:18px; letter-spacing:0.5px;">Product</h4>
+          <ul style="display:flex; flex-direction:column; gap:10px;">
+            <li><a href="#about" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">What is HDCRS</a></li>
+            <li><a href="#features" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Features</a></li>
+            <li><a href="#architecture" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Architecture</a></li>
+            <li><a href="#portals" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Portals</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-accent); font-size:0.82rem; font-weight:700; color:var(--color-white); margin-bottom:18px; letter-spacing:0.5px;">Company</h4>
+          <ul style="display:flex; flex-direction:column; gap:10px;">
+            <li><a href="index.html" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">About Halbeeg</a></li>
+            <li><a href="index.html#services" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Services</a></li>
+            <li><a href="index.html#gallery" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Gallery</a></li>
+            <li><a href="index.html#contact" style="font-size:0.84rem; color:rgba(255,255,255,0.5);">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-accent); font-size:0.82rem; font-weight:700; color:var(--color-white); margin-bottom:18px; letter-spacing:0.5px;">Contact</h4>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.84rem; color:rgba(255,255,255,0.5);">
+              <i class="fas fa-phone" style="color:var(--color-accent); font-size:0.85rem;"></i>
+              <span>+251 910 061582</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.84rem; color:rgba(255,255,255,0.5);">
+              <i class="fas fa-location-dot" style="color:var(--color-accent); font-size:0.85rem;"></i>
+              <span>Jigjiga, Somali Regional State</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.84rem; color:rgba(255,255,255,0.5);">
+              <i class="fas fa-envelope" style="color:var(--color-accent); font-size:0.85rem;"></i>
+              <span>info@halbeeg.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4);">2026 Halbeeg Architect &amp; Engineering Consultancy. All Rights Reserved.</p>
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4);">HDCRS v4.1 — Built with Google Apps Script</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== BACK TO TOP ====== -->
+  <button id="backToTop" class="back-to-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+  <script>
+    // ====== NAVIGATION ======
+    const navbar = document.getElementById('navbar');
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // ====== BACK TO TOP ======
+    const backToTop = document.getElementById('backToTop');
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    window.addEventListener('scroll', () => {
+      backToTop.style.display = window.scrollY > 400 ? 'flex' : 'none';
+    });
+    backToTop.style.display = 'none';
+
+    // ====== SCROLL REVEAL ======
+    const revealElements = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // ====== COUNTER ANIMATION ======
+    const counterElements = document.querySelectorAll('[data-target]');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = parseInt(entry.target.getAttribute('data-target'));
+          let current = 0;
+          const increment = target / 40;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            entry.target.textContent = Math.floor(current);
+          }, 40);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    counterElements.forEach(el => counterObserver.observe(el));
+
+    // ====== HERO PARTICLES ======
+    (function() {
+      const container = document.getElementById('heroParticles');
+      if (!container) return;
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.style.cssText = `
+          position: absolute;
+          width: ${Math.random() * 4 + 2}px;
+          height: ${Math.random() * 4 + 2}px;
+          background: rgba(196, 154, 42, ${Math.random() * 0.3 + 0.1});
+          border-radius: 50%;
+          top: ${Math.random() * 100}%;
+          left: ${Math.random() * 100}%;
+          animation: float-particle ${Math.random() * 15 + 10}s ease-in-out infinite;
+          animation-delay: ${Math.random() * 5}s;
+        `;
+        container.appendChild(p);
+      }
+    })();
+  </script>
+</body>
+</html>
