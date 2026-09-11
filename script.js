@@ -1,3 +1,4 @@
+/* Version 5.0 */
 /* ============================================================
    HALBEEG - Main JavaScript
    Smart interactions: scroll reveal, gallery, counters, form, nav
@@ -223,18 +224,16 @@
       var title = this.querySelector('.gallery-overlay h4');
       var desc = this.querySelector('.gallery-overlay p');
       var cat = this.querySelector('.gallery-overlay .gallery-cat');
-      var bgStyle = this.querySelector('.gallery-img').getAttribute('style');
+      var imgEl = this.querySelector('.gallery-img img');
+      var imgSrc = imgEl ? imgEl.getAttribute('src') : '';
 
-      var html = '<div style="width:100%;aspect-ratio:16/9;border-radius:16px;margin-bottom:20px;' + bgStyle + 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">';
-      var icon = this.querySelector('.gallery-placeholder-icon');
-      var text = this.querySelector('.gallery-placeholder-text');
-      if (icon) html += '<i class="' + icon.className + '" style="font-size:4rem;color:rgba(255,255,255,0.25);"></i>';
-      if (text) html += '<span style="font-family:Montserrat,sans-serif;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.2);letter-spacing:2px;text-transform:uppercase;">' + text.textContent + '</span>';
-      html += '</div>';
+      var html = '';
+      if (imgSrc) {
+        html += '<img src="' + imgSrc + '" style="width:100%;max-height:70vh;object-fit:contain;border-radius:12px;margin-bottom:20px;" alt="Photo">';
+      }
       if (cat) html += '<div style="margin-bottom:12px;font-family:Montserrat,sans-serif;font-size:0.7rem;font-weight:700;color:#C49A2A;text-transform:uppercase;letter-spacing:2px;">' + cat.textContent + '</div>';
       if (title) html += '<h4>' + title.textContent + '</h4>';
       if (desc) html += '<p>' + desc.textContent + '</p>';
-      html += '<p style="margin-top:16px;font-size:0.85rem;color:rgba(255,255,255,0.4);font-style:italic;">Replace this placeholder with your actual project photo.</p>';
 
       if (lightboxContent) lightboxContent.innerHTML = html;
       if (lightbox) lightbox.style.display = 'flex';
@@ -288,32 +287,66 @@
         projectDetails: document.getElementById('projectDetails').value.trim()
       };
 
-      // Send to Google Apps Script endpoint
-      // REPLACE THIS URL with your deployed FormHandler web app URL
-      var FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycby7J6IiWo22UbSs3-imrj41jnTf4f4G5lxNliiqdlXFt_azj0To6ewXU0LQ_3YP28sp/exec';
+      // ── RFP Inquiry via mailto (no backend required) ──
+      var recipientEmail = 'info@halbeeg.com'; // <-- change to your real inbox
+      var subject = encodeURIComponent('HDCRS Inquiry — ' + formData.projectCategory + ' / ' + formData.orgName);
+      var body = encodeURIComponent(
+        'Organization: ' + formData.orgName + '\n' +
+        'Department:  ' + formData.department + '\n' +
+        'Name:       ' + formData.repName + '\n' +
+        'Title:      ' + formData.repTitle + '\n' +
+        'Email:      ' + formData.repEmail + '\n' +
+        'Phone:      ' + formData.repPhone + '\n' +
+        'Category:   ' + formData.projectCategory + '\n' +
+        'Scope:      ' + formData.projectScope + '\n' +
+        'Details:\n' + formData.projectDetails
+      );
+      var mailtoLink = 'mailto:' + recipientEmail + '?subject=' + subject + '&body=' + body;
 
-      fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'submitInquiry', data: formData })
-      })
-        .then(function (res) { return res.json(); })
-        .then(function (result) {
-          showFormMessage(result.success !== false, result.message || (result.success !== false ? 'Your inquiry has been submitted successfully. Our team will respond within 2 business days.' : 'Submission failed. Please try again or contact us directly.'));
-          if (result.success !== false) {
-            intakeForm.reset();
-          }
-        })
-        .catch(function () {
-          // If endpoint is not configured, show success anyway (demo mode)
-          showFormMessage(true, 'Thank you for your inquiry, ' + formData.repName + '. Our technical liaison team will review your ' + formData.projectCategory + ' request and respond within 2 business days at ' + formData.repEmail + '.');
-          intakeForm.reset();
-        })
-        .finally(function () {
-          if (btnText) btnText.style.display = 'inline';
-          if (btnLoading) btnLoading.style.display = 'none';
-          submitBtn.disabled = false;
-        });
+      // Build a WhatsApp fallback link (optional, remove if not needed)
+      var waNumber = '252612345678'; // <-- change to your WhatsApp number
+      var waText = encodeURIComponent(
+        '*HDCRS Inquiry*\n' +
+        'Org: ' + formData.orgName + '\n' +
+        'Name: ' + formData.repName + ' (' + formData.repTitle + ')\n' +
+        'Email: ' + formData.repEmail + '\n' +
+        'Phone: ' + formData.repPhone + '\n' +
+        'Category: ' + formData.projectCategory + '\n' +
+        'Scope: ' + formData.projectScope + '\n' +
+        'Details: ' + formData.projectDetails
+      );
+      var whatsappLink = 'https://wa.me/' + waNumber + '?text=' + waText;
+
+      // Open mailto — if it fails or user has no client, show WhatsApp option
+      var mailWindow = window.open(mailtoLink, '_blank');
+      setTimeout(function () {
+        try {
+          if (mailWindow && mailWindow.closed) throw 'closed';
+        } catch (_) {
+          // mailto likely failed — offer WhatsApp
+          showFormMessage(true,
+            'Your email client did not open. ' +
+            '<a href="' + whatsappLink + '" target="_blank" rel="noopener" ' +
+            'style="color:#C49A2A;text-decoration:underline;font-weight:600;">' +
+            'Send via WhatsApp instead</a>.'
+          );
+          return;
+        }
+        showFormMessage(true,
+          'Thank you, ' + formData.repName + '. Your email client should have opened with the inquiry pre-filled. ' +
+          'If it did not, <a href="' + whatsappLink + '" target="_blank" rel="noopener" ' +
+          'style="color:#C49A2A;text-decoration:underline;font-weight:600;">' +
+          'send via WhatsApp</a>.'
+        );
+        intakeForm.reset();
+      }, 1500);
+
+      // Reset button state after mailto attempt
+      setTimeout(function () {
+        if (btnText) btnText.style.display = 'inline';
+        if (btnLoading) btnLoading.style.display = 'none';
+        submitBtn.disabled = false;
+      }, 1800);
     });
   }
 
