@@ -1,7 +1,7 @@
-/* Version 5.0 */
 /* ============================================================
    HALBEEG - Main JavaScript
    Smart interactions: scroll reveal, gallery, counters, form, nav
+   Version 7.0 — Warm theme + working RFP endpoint
    ============================================================ */
 
 (function () {
@@ -25,26 +25,17 @@
   function handleScroll() {
     var scrollY = window.scrollY;
 
-    // Navbar background
     if (navbar) {
-      if (scrollY > 80) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
+      if (scrollY > 80) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
     }
 
-    // Back to top button
     var backBtn = document.getElementById('backToTop');
     if (backBtn) {
-      if (scrollY > 600) {
-        backBtn.classList.add('visible');
-      } else {
-        backBtn.classList.remove('visible');
-      }
+      if (scrollY > 600) backBtn.classList.add('visible');
+      else backBtn.classList.remove('visible');
     }
 
-    // Active nav link based on scroll position
     var currentSection = '';
     for (var i = 0; i < sections.length; i++) {
       var sectionTop = sections[i].offsetTop - 200;
@@ -54,20 +45,16 @@
         break;
       }
     }
-
     for (var j = 0; j < navLinks.length; j++) {
       navLinks[j].classList.remove('active');
       var href = navLinks[j].getAttribute('href');
-      if (href === '#' + currentSection) {
-        navLinks[j].classList.add('active');
-      }
+      if (href === '#' + currentSection) navLinks[j].classList.add('active');
     }
   }
 
   window.addEventListener('scroll', handleScroll);
   handleScroll();
 
-  // Back to top click
   var backToTopBtn = document.getElementById('backToTop');
   if (backToTopBtn) {
     backToTopBtn.addEventListener('click', function () {
@@ -86,7 +73,6 @@
       document.body.style.overflow = navMenu.classList.contains('open') ? 'hidden' : '';
     });
 
-    // Close menu when a link is clicked
     var menuLinks = navMenu.querySelectorAll('.nav-link');
     for (var m = 0; m < menuLinks.length; m++) {
       menuLinks[m].addEventListener('click', function () {
@@ -105,15 +91,12 @@
     for (var i = 0; i < revealElements.length; i++) {
       var el = revealElements[i];
       var elementTop = el.getBoundingClientRect().top;
-      if (elementTop < windowHeight - 80) {
-        el.classList.add('visible');
-      }
+      if (elementTop < windowHeight - 80) el.classList.add('visible');
     }
   }
 
   window.addEventListener('scroll', checkReveal);
   window.addEventListener('resize', checkReveal);
-  // Initial check after preloader
   setTimeout(checkReveal, 2200);
 
   // ========== ANIMATED COUNTERS ==========
@@ -122,7 +105,6 @@
 
   function animateCounters() {
     if (countersAnimated) return;
-
     var firstCounter = counters[0];
     if (!firstCounter) return;
 
@@ -140,17 +122,12 @@
         function step(timestamp) {
           if (!startTime) startTime = timestamp;
           var progress = Math.min((timestamp - startTime) / duration, 1);
-          // Ease out cubic
           var eased = 1 - Math.pow(1 - progress, 3);
           var current = Math.floor(eased * target);
           counter.textContent = current;
-          if (progress < 1) {
-            requestAnimationFrame(step);
-          } else {
-            counter.textContent = target;
-          }
+          if (progress < 1) requestAnimationFrame(step);
+          else counter.textContent = target;
         }
-
         requestAnimationFrame(step);
       })(counters[i]);
     }
@@ -168,21 +145,20 @@
         'position:absolute;border-radius:50%;pointer-events:none;' +
         'width:' + (2 + Math.random() * 4) + 'px;' +
         'height:' + (2 + Math.random() * 4) + 'px;' +
-        'background:rgba(196,154,42,' + (0.1 + Math.random() * 0.2) + ');' +
+        'background:rgba(184,134,11,' + (0.1 + Math.random() * 0.25) + ');' +
         'left:' + (Math.random() * 100) + '%;' +
         'top:' + (Math.random() * 100) + '%;' +
         'animation:float-particle ' + (6 + Math.random() * 8) + 's ease-in-out infinite ' + (Math.random() * 4) + 's;';
       particlesContainer.appendChild(dot);
     }
 
-    // Add the keyframes dynamically
     var styleSheet = document.createElement('style');
     styleSheet.textContent =
       '@keyframes float-particle {' +
-      '0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }' +
-      '25% { transform: translate(' + (10 + Math.random() * 30) + 'px, -' + (20 + Math.random() * 40) + 'px) scale(1.3); opacity: 0.6; }' +
-      '50% { transform: translate(-' + (15 + Math.random() * 20) + 'px, -' + (10 + Math.random() * 30) + 'px) scale(0.8); opacity: 0.4; }' +
-      '75% { transform: translate(' + (5 + Math.random() * 25) + 'px, ' + (10 + Math.random() * 20) + 'px) scale(1.1); opacity: 0.5; }' +
+      '0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }' +
+      '25% { transform: translate(' + (10 + Math.random() * 30) + 'px, -' + (20 + Math.random() * 40) + 'px) scale(1.3); opacity: 0.65; }' +
+      '50% { transform: translate(-' + (15 + Math.random() * 20) + 'px, -' + (10 + Math.random() * 30) + 'px) scale(0.8); opacity: 0.45; }' +
+      '75% { transform: translate(' + (5 + Math.random() * 25) + 'px, ' + (10 + Math.random() * 20) + 'px) scale(1.1); opacity: 0.55; }' +
       '}';
     document.head.appendChild(styleSheet);
   }
@@ -193,15 +169,9 @@
 
   for (var t = 0; t < galleryTabs.length; t++) {
     galleryTabs[t].addEventListener('click', function () {
-      // Update active tab
-      for (var a = 0; a < galleryTabs.length; a++) {
-        galleryTabs[a].classList.remove('active');
-      }
+      for (var a = 0; a < galleryTabs.length; a++) galleryTabs[a].classList.remove('active');
       this.classList.add('active');
-
       var filter = this.getAttribute('data-filter');
-
-      // Filter items
       for (var g = 0; g < galleryItems.length; g++) {
         var item = galleryItems[g];
         if (filter === 'all' || item.getAttribute('data-category') === filter) {
@@ -224,14 +194,19 @@
       var title = this.querySelector('.gallery-overlay h4');
       var desc = this.querySelector('.gallery-overlay p');
       var cat = this.querySelector('.gallery-overlay .gallery-cat');
-      var imgEl = this.querySelector('.gallery-img img');
-      var imgSrc = imgEl ? imgEl.getAttribute('src') : '';
+      var img = this.querySelector('.gallery-img img');
 
       var html = '';
-      if (imgSrc) {
-        html += '<img src="' + imgSrc + '" style="width:100%;max-height:70vh;object-fit:contain;border-radius:12px;margin-bottom:20px;" alt="Photo">';
+      if (img && img.src) {
+        html += '<div style="width:100%;border-radius:16px;margin-bottom:20px;overflow:hidden;background:#3D2E1A;">';
+        html += '<img src="' + img.src + '" alt="' + (img.alt || '') + '" style="width:100%;height:auto;display:block;max-height:70vh;object-fit:contain;">';
+        html += '</div>';
+      } else {
+        html += '<div style="width:100%;aspect-ratio:16/9;border-radius:16px;margin-bottom:20px;background:linear-gradient(135deg,#DCD0B4,#B8A67F);display:flex;align-items:center;justify-content:center;">';
+        html += '<i class="fas fa-image" style="font-size:4rem;color:rgba(61,46,26,0.3);"></i>';
+        html += '</div>';
       }
-      if (cat) html += '<div style="margin-bottom:12px;font-family:Montserrat,sans-serif;font-size:0.7rem;font-weight:700;color:#C49A2A;text-transform:uppercase;letter-spacing:2px;">' + cat.textContent + '</div>';
+      if (cat) html += '<div style="margin-bottom:12px;font-family:Montserrat,sans-serif;font-size:0.7rem;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:2px;">' + cat.textContent + '</div>';
       if (title) html += '<h4>' + title.textContent + '</h4>';
       if (desc) html += '<p>' + desc.textContent + '</p>';
 
@@ -252,15 +227,17 @@
       if (e.target === lightbox) closeLightbox();
     });
   }
-
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeLightbox();
   });
 
-  // ========== INTAKE FORM ==========
+  // ========== INTAKE FORM (RFP) — V7.0 ==========
   var intakeForm = document.getElementById('intakeForm');
   var formMessage = document.getElementById('formMessage');
   var submitBtn = document.getElementById('submitBtn');
+
+  // HDCRS backend (Code.gs V6.4). If the deployment URL changes again, update ONLY this line.
+  var FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyP6a_4bvB7qgPMEQYVMUiopSfYcI5JrsFHTb7tJjFkzVsQUJ6oolMiu9ZiroqRdYIU/exec';
 
   if (intakeForm) {
     intakeForm.addEventListener('submit', function (e) {
@@ -269,12 +246,11 @@
       var btnText = submitBtn.querySelector('.btn-text');
       var btnLoading = submitBtn.querySelector('.btn-loading');
 
-      // Show loading state
       if (btnText) btnText.style.display = 'none';
       if (btnLoading) btnLoading.style.display = 'inline-flex';
       submitBtn.disabled = true;
+      if (formMessage) formMessage.style.display = 'none';
 
-      // Collect form data
       var formData = {
         orgName: document.getElementById('orgName').value.trim(),
         department: document.getElementById('department').value.trim(),
@@ -287,66 +263,33 @@
         projectDetails: document.getElementById('projectDetails').value.trim()
       };
 
-      // ── RFP Inquiry via mailto (no backend required) ──
-      var recipientEmail = 'info@halbeeg.com'; // <-- change to your real inbox
-      var subject = encodeURIComponent('HDCRS Inquiry — ' + formData.projectCategory + ' / ' + formData.orgName);
-      var body = encodeURIComponent(
-        'Organization: ' + formData.orgName + '\n' +
-        'Department:  ' + formData.department + '\n' +
-        'Name:       ' + formData.repName + '\n' +
-        'Title:      ' + formData.repTitle + '\n' +
-        'Email:      ' + formData.repEmail + '\n' +
-        'Phone:      ' + formData.repPhone + '\n' +
-        'Category:   ' + formData.projectCategory + '\n' +
-        'Scope:      ' + formData.projectScope + '\n' +
-        'Details:\n' + formData.projectDetails
-      );
-      var mailtoLink = 'mailto:' + recipientEmail + '?subject=' + subject + '&body=' + body;
-
-      // Build a WhatsApp fallback link (optional, remove if not needed)
-      var waNumber = '252612345678'; // <-- change to your WhatsApp number
-      var waText = encodeURIComponent(
-        '*HDCRS Inquiry*\n' +
-        'Org: ' + formData.orgName + '\n' +
-        'Name: ' + formData.repName + ' (' + formData.repTitle + ')\n' +
-        'Email: ' + formData.repEmail + '\n' +
-        'Phone: ' + formData.repPhone + '\n' +
-        'Category: ' + formData.projectCategory + '\n' +
-        'Scope: ' + formData.projectScope + '\n' +
-        'Details: ' + formData.projectDetails
-      );
-      var whatsappLink = 'https://wa.me/' + waNumber + '?text=' + waText;
-
-      // Open mailto — if it fails or user has no client, show WhatsApp option
-      var mailWindow = window.open(mailtoLink, '_blank');
-      setTimeout(function () {
-        try {
-          if (mailWindow && mailWindow.closed) throw 'closed';
-        } catch (_) {
-          // mailto likely failed — offer WhatsApp
-          showFormMessage(true,
-            'Your email client did not open. ' +
-            '<a href="' + whatsappLink + '" target="_blank" rel="noopener" ' +
-            'style="color:#C49A2A;text-decoration:underline;font-weight:600;">' +
-            'Send via WhatsApp instead</a>.'
-          );
-          return;
-        }
-        showFormMessage(true,
-          'Thank you, ' + formData.repName + '. Your email client should have opened with the inquiry pre-filled. ' +
-          'If it did not, <a href="' + whatsappLink + '" target="_blank" rel="noopener" ' +
-          'style="color:#C49A2A;text-decoration:underline;font-weight:600;">' +
-          'send via WhatsApp</a>.'
-        );
-        intakeForm.reset();
-      }, 1500);
-
-      // Reset button state after mailto attempt
-      setTimeout(function () {
-        if (btnText) btnText.style.display = 'inline';
-        if (btnLoading) btnLoading.style.display = 'none';
-        submitBtn.disabled = false;
-      }, 1800);
+      fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'submitInquiry', data: formData })
+      })
+        .then(function (res) { return res.text(); })
+        .then(function (text) {
+          var result;
+          try { result = JSON.parse(text); }
+          catch (e) {
+            throw new Error('Server returned an unexpected response. Please try again or email us directly at abdirahman144@gmail.com.');
+          }
+          if (result.success) {
+            showFormMessage(true, result.message || ('Thank you, ' + formData.repName + '. Your inquiry (' + (result.inquiryId || 'received') + ') has been recorded. We will respond within 2 business days.'));
+            intakeForm.reset();
+          } else {
+            showFormMessage(false, result.message || 'Submission could not be completed. Please try again or email abdirahman144@gmail.com directly.');
+          }
+        })
+        .catch(function (err) {
+          showFormMessage(false, err.message || 'Network error. Please check your connection or email abdirahman144@gmail.com directly.');
+        })
+        .finally(function () {
+          if (btnText) btnText.style.display = 'inline';
+          if (btnLoading) btnLoading.style.display = 'none';
+          submitBtn.disabled = false;
+        });
     });
   }
 
